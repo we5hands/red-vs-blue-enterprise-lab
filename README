@@ -1,172 +1,198 @@
-# Red Team vs Blue Team: Simulated Enterprise Lab
+# Red Team vs Blue Team Cybersecurity Lab
 
 ## Overview
 
-This project documents a simulated Red Team vs Blue Team cybersecurity lab built in a virtualized environment. The lab was designed to demonstrate offensive security testing against a vulnerable web application hosted on a Windows server, followed by defensive analysis of logs and indicators of compromise from the Blue Team perspective.
+This project documents a simulated **Red Team vs Blue Team cybersecurity lab** built in a virtualized environment. The purpose of the lab is to simulate a realistic attack scenario against a vulnerable web application and analyze the resulting activity from both offensive and defensive perspectives.
 
-The environment was built using Proxmox virtualization and included a Kali Linux attacker machine and a Windows-based target running DVWA through XAMPP. The exercise covered web exploitation, SQL injection, Burp Suite interception, remote access, privilege escalation, and host-based log analysis.
+The lab environment was designed to demonstrate:
 
----
-
-## Objectives
-
-- Build a small virtualized cyber range
-- Simulate a realistic attacker workflow
-- Exploit a vulnerable web application
-- Gain access to the target system
-- Perform privilege escalation
-- Investigate attacker activity through Windows event logs and monitoring data
-- Document offensive and defensive findings
-
----
-
-## Lab Environment
-
-### Core Systems
-- Proxmox VE host
-- Kali Linux attacker VM
-- Windows Server target VM
-- DVWA hosted through XAMPP on the Windows system
-
-### Topology
-- Attacker system connected to the lab network
-- Target Windows system hosting a vulnerable web application
-- Blue Team analysis performed through Windows logging and event review
-
-![Lab Topology](diagrams/lab-topology.png)
-
----
-
-## Tools Used
-
-### Red Team
-- Kali Linux
-- Burp Suite
-- DVWA
-- RDP
-- winPEASx64
-- GODPotato
-
-### Blue Team
-- Windows Event Viewer
-- Security logs
-- Sysmon / event monitoring
-- Host-based analysis of process execution and network connections
-
----
-
-## Red Team Workflow
-
-### 1. Initial Lab Setup
-The environment was deployed in Proxmox with a Kali Linux attacker system and a Windows server target hosting DVWA through XAMPP.
-
-![Proxmox Overview](screenshots/proxmox-lab-overview.png)
-
-### 2. Web Application Access
-The vulnerable DVWA application was hosted on the Windows target. XAMPP was used to start the web service and make the application reachable from the attacker machine.
-
-![Windows Server DVWA](screenshots/windows-server-dvwa.png)
-
-### 3. SQL Injection Discovery
-The application was tested for SQL injection and successfully exploited using an authentication bypass style payload and UNION-based extraction.
-
-Example findings documented in the lab included:
-- Vulnerability: SQL Injection
-- Location: vulnerable parameter input
-- Impact: authentication bypass / data disclosure
-- Example payload: `' OR '1'='1`
-
-![DVWA SQL Injection](screenshots/dvwa-sql-injection.png)
-
-### 4. Data Extraction
-A UNION-based payload was used to retrieve user and password hash data from the backend database.
-
-![UNION Injection Results](screenshots/dvwa-union-injection.png)
-
-### 5. Burp Suite Interception
-Burp Suite was used to intercept and inspect web traffic between the attacker browser and the vulnerable application.
-
-![Burp Suite Intercept](screenshots/burpsuite-intercept.png)
-
-### 6. Remote Access
-Remote Desktop was used to interact with the Windows target after gaining access.
-
-![RDP Session](screenshots/rdp-session.png)
-
-### 7. Enumeration and Privilege Escalation
-winPEASx64 was transferred and executed for privilege escalation enumeration. GODPotato was then used to escalate privileges successfully to NT AUTHORITY\\SYSTEM.
-
-![winPEAS Execution](screenshots/winpeas-execution.png)
-
-![GODPotato SYSTEM](screenshots/godpotato-system.png)
-
----
-
-## Blue Team Workflow
-
-### 1. Failed Login Analysis
-Windows Security logs were reviewed for failed authentication attempts, including Event ID 4625.
-
-![Event ID 4625](screenshots/eventid-4625.png)
-
-### 2. Successful Login Analysis
-Successful authentication activity was identified through Event ID 4624.
-
-![Event ID 4624](screenshots/eventid-4624.png)
-
-### 3. Malicious Tool Execution
-Process execution telemetry showed suspicious binaries such as winPEAS and certutil.
-
-![Sysmon winPEAS](screenshots/sysmon-winpeas.png)
-
-![Sysmon certutil](screenshots/sysmon-certutil.png)
-
-### 4. Network Connection Review
-Network connection artifacts were reviewed to identify attacker activity and follow-on communication.
-
-![Sysmon Network Connections](screenshots/sysmon-networkconnections.png)
-
----
-
-## Key Findings
-
-### Red Team Findings
-- The target web application was vulnerable to SQL injection
-- Burp Suite successfully intercepted attacker traffic
-- Remote access to the Windows target was achieved
-- winPEAS identified privilege escalation opportunities
-- GODPotato successfully elevated access to SYSTEM
-
-### Blue Team Findings
-- Failed and successful logon events were visible in Windows security logs
-- Suspicious tool execution was recorded in event monitoring
-- Network connection activity could be correlated to attacker behavior
-- Process execution evidence supported compromise validation
-
----
-
-## Skills Demonstrated
-
-- Virtual lab deployment
 - Web application exploitation
-- SQL injection testing
-- Traffic interception with Burp Suite
-- Windows remote access
-- Privilege escalation enumeration
-- Windows event log analysis
-- Detection-oriented investigation
-- Red Team / Blue Team documentation
+- SQL injection attacks
+- Privilege escalation techniques
+- Remote access to compromised systems
+- Security monitoring and incident investigation
+
+The environment uses **Kali Linux as the attacker machine** and a **Windows server running DVWA (Damn Vulnerable Web Application)** as the target.
 
 ---
 
-## Security Notice
+# Lab Environment
 
-This repository uses sanitized screenshots and generalized lab details for public sharing. Internal IP addresses, infrastructure identifiers, and sensitive access details have been removed or replaced with documentation-safe values.
+The lab was built using virtualization to simulate a small enterprise environment.
+
+### Components
+
+| System | Purpose |
+|------|------|
+| Proxmox | Virtualization host |
+| Kali Linux | Red Team attacker machine |
+| Windows Server | Target system |
+| XAMPP | Web server hosting DVWA |
+| DVWA | Vulnerable web application used for exploitation |
 
 ---
 
-## Author
+# Network Architecture
 
-Nicholas Hands  
+The attacker machine communicates with the target system through the lab network.
+This setup allows the attacker to test vulnerabilities in a controlled environment while allowing the Blue Team to analyze logs and system activity.
+
+---
+
+# Red Team Attack Workflow
+
+The Red Team portion of the lab focuses on identifying and exploiting vulnerabilities in the DVWA web application.
+
+---
+
+## Step 1 — Target Web Server Setup
+
+The Windows target machine hosts DVWA using the **XAMPP control panel**.
+
+The Apache web server and MySQL database are started through XAMPP.
+
+### Screenshot
+
+![XAMPP Panel](screenshots/xampppanel.png)
+
+---
+
+## Step 2 — Identifying SQL Injection Vulnerability
+
+The DVWA application contains a vulnerable input field that allows SQL queries to be manipulated.
+
+An SQL injection payload is used to bypass authentication.
+
+Example payload used:
+
+### Screenshot
+
+![DVWA SQL Injection](screenshots/dvwasqlinj.png)
+
+---
+
+## Step 3 — Extracting Database Information
+
+Using SQL injection, the attacker is able to retrieve sensitive data such as usernames and password hashes from the backend database.
+
+### Screenshot
+
+![Extracted Credentials](screenshots/dvwasqlinjusernamepw.png)
+
+---
+
+## Step 4 — Accessing Administrative Controls
+
+After gaining access to the system, the attacker can view administrative control functions and system configuration information.
+
+### Screenshot
+
+![Admin Control Panel](screenshots/showadmincontrol.png)
+
+---
+
+## Step 5 — Enumerating System Information
+
+The attacker gathers additional information about the compromised system to identify potential privilege escalation opportunities.
+
+### Screenshot
+
+![System Information](screenshots/adminsysinfo.png)
+
+---
+
+## Step 6 — Identifying Administrative Privileges
+
+The attacker reviews the administrative groups and privilege assignments available on the compromised system.
+
+### Screenshot
+
+![Admin Groups](screenshots/admingroups.png)
+
+---
+
+# Blue Team Analysis
+
+The Blue Team portion of the exercise focuses on detecting and investigating the attack activity.
+
+Security teams would analyze:
+
+- Web server logs
+- Authentication events
+- Application activity
+- System process execution
+- Privilege escalation attempts
+
+This investigation helps defenders understand:
+
+- How the attacker gained access
+- What vulnerabilities were exploited
+- What actions were performed after compromise
+- How to detect and prevent similar attacks in the future
+
+---
+
+# Security Lessons Learned
+
+This lab demonstrates several important cybersecurity concepts:
+
+### Web Application Security
+Applications must sanitize user input to prevent SQL injection vulnerabilities.
+
+### Principle of Least Privilege
+Systems should minimize the permissions granted to users and applications.
+
+### Monitoring and Detection
+Organizations should implement logging and monitoring systems capable of detecting suspicious activity.
+
+### Patch Management
+Keeping systems and applications updated can reduce exposure to known vulnerabilities.
+
+---
+
+# Skills Demonstrated
+
+This lab demonstrates hands-on experience with:
+
+- Web application penetration testing
+- SQL injection exploitation
+- Vulnerability analysis
+- Red Team attack methodology
+- Blue Team investigation techniques
+- Security lab environment development
+- Virtualized cybersecurity testing environments
+
+---
+
+# Tools Used
+
+### Red Team Tools
+
+- Kali Linux
+- DVWA
+- SQL injection techniques
+- Web application testing
+
+### Blue Team Tools
+
+- Windows Event Viewer
+- System monitoring tools
+- Log analysis
+
+---
+
+# Security Notice
+
+This repository contains **sanitized screenshots and documentation** from a controlled lab environment.
+
+No real systems, credentials, or production environments were involved in this project.
+
+The lab was conducted strictly for **educational and cybersecurity research purposes**.
+
+---
+
+# Author
+
+Nick Hands  
 Cybersecurity Student  
 Frostburg State University
