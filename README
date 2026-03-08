@@ -1,1 +1,172 @@
+# Red Team vs Blue Team: Simulated Enterprise Lab
 
+## Overview
+
+This project documents a simulated Red Team vs Blue Team cybersecurity lab built in a virtualized environment. The lab was designed to demonstrate offensive security testing against a vulnerable web application hosted on a Windows server, followed by defensive analysis of logs and indicators of compromise from the Blue Team perspective.
+
+The environment was built using Proxmox virtualization and included a Kali Linux attacker machine and a Windows-based target running DVWA through XAMPP. The exercise covered web exploitation, SQL injection, Burp Suite interception, remote access, privilege escalation, and host-based log analysis.
+
+---
+
+## Objectives
+
+- Build a small virtualized cyber range
+- Simulate a realistic attacker workflow
+- Exploit a vulnerable web application
+- Gain access to the target system
+- Perform privilege escalation
+- Investigate attacker activity through Windows event logs and monitoring data
+- Document offensive and defensive findings
+
+---
+
+## Lab Environment
+
+### Core Systems
+- Proxmox VE host
+- Kali Linux attacker VM
+- Windows Server target VM
+- DVWA hosted through XAMPP on the Windows system
+
+### Topology
+- Attacker system connected to the lab network
+- Target Windows system hosting a vulnerable web application
+- Blue Team analysis performed through Windows logging and event review
+
+![Lab Topology](diagrams/lab-topology.png)
+
+---
+
+## Tools Used
+
+### Red Team
+- Kali Linux
+- Burp Suite
+- DVWA
+- RDP
+- winPEASx64
+- GODPotato
+
+### Blue Team
+- Windows Event Viewer
+- Security logs
+- Sysmon / event monitoring
+- Host-based analysis of process execution and network connections
+
+---
+
+## Red Team Workflow
+
+### 1. Initial Lab Setup
+The environment was deployed in Proxmox with a Kali Linux attacker system and a Windows server target hosting DVWA through XAMPP.
+
+![Proxmox Overview](screenshots/proxmox-lab-overview.png)
+
+### 2. Web Application Access
+The vulnerable DVWA application was hosted on the Windows target. XAMPP was used to start the web service and make the application reachable from the attacker machine.
+
+![Windows Server DVWA](screenshots/windows-server-dvwa.png)
+
+### 3. SQL Injection Discovery
+The application was tested for SQL injection and successfully exploited using an authentication bypass style payload and UNION-based extraction.
+
+Example findings documented in the lab included:
+- Vulnerability: SQL Injection
+- Location: vulnerable parameter input
+- Impact: authentication bypass / data disclosure
+- Example payload: `' OR '1'='1`
+
+![DVWA SQL Injection](screenshots/dvwa-sql-injection.png)
+
+### 4. Data Extraction
+A UNION-based payload was used to retrieve user and password hash data from the backend database.
+
+![UNION Injection Results](screenshots/dvwa-union-injection.png)
+
+### 5. Burp Suite Interception
+Burp Suite was used to intercept and inspect web traffic between the attacker browser and the vulnerable application.
+
+![Burp Suite Intercept](screenshots/burpsuite-intercept.png)
+
+### 6. Remote Access
+Remote Desktop was used to interact with the Windows target after gaining access.
+
+![RDP Session](screenshots/rdp-session.png)
+
+### 7. Enumeration and Privilege Escalation
+winPEASx64 was transferred and executed for privilege escalation enumeration. GODPotato was then used to escalate privileges successfully to NT AUTHORITY\\SYSTEM.
+
+![winPEAS Execution](screenshots/winpeas-execution.png)
+
+![GODPotato SYSTEM](screenshots/godpotato-system.png)
+
+---
+
+## Blue Team Workflow
+
+### 1. Failed Login Analysis
+Windows Security logs were reviewed for failed authentication attempts, including Event ID 4625.
+
+![Event ID 4625](screenshots/eventid-4625.png)
+
+### 2. Successful Login Analysis
+Successful authentication activity was identified through Event ID 4624.
+
+![Event ID 4624](screenshots/eventid-4624.png)
+
+### 3. Malicious Tool Execution
+Process execution telemetry showed suspicious binaries such as winPEAS and certutil.
+
+![Sysmon winPEAS](screenshots/sysmon-winpeas.png)
+
+![Sysmon certutil](screenshots/sysmon-certutil.png)
+
+### 4. Network Connection Review
+Network connection artifacts were reviewed to identify attacker activity and follow-on communication.
+
+![Sysmon Network Connections](screenshots/sysmon-networkconnections.png)
+
+---
+
+## Key Findings
+
+### Red Team Findings
+- The target web application was vulnerable to SQL injection
+- Burp Suite successfully intercepted attacker traffic
+- Remote access to the Windows target was achieved
+- winPEAS identified privilege escalation opportunities
+- GODPotato successfully elevated access to SYSTEM
+
+### Blue Team Findings
+- Failed and successful logon events were visible in Windows security logs
+- Suspicious tool execution was recorded in event monitoring
+- Network connection activity could be correlated to attacker behavior
+- Process execution evidence supported compromise validation
+
+---
+
+## Skills Demonstrated
+
+- Virtual lab deployment
+- Web application exploitation
+- SQL injection testing
+- Traffic interception with Burp Suite
+- Windows remote access
+- Privilege escalation enumeration
+- Windows event log analysis
+- Detection-oriented investigation
+- Red Team / Blue Team documentation
+
+---
+
+## Security Notice
+
+This repository uses sanitized screenshots and generalized lab details for public sharing. Internal IP addresses, infrastructure identifiers, and sensitive access details have been removed or replaced with documentation-safe values.
+
+---
+
+## Author
+
+Nicholas Hands  
+Cybersecurity Student  
+Frostburg State University
